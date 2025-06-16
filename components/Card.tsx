@@ -90,16 +90,16 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     position: "relative",
     justifyContent: "center",
-    shadowColor: "#ff0000", // subtle red glow
+    shadowColor: "#ff0000", 
     shadowOffset: {
       width: -4,
       height: 4,
     },
     shadowOpacity: 0.3,
     shadowRadius: 10,
-    elevation: 12, // for Android bulge
+    elevation: 12, 
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.08)", // soft white slant
+    borderColor: "rgba(255, 255, 255, 0.08)", 
   },
   logoRow: {
     flexDirection: "row",
