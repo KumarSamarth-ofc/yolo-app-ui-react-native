@@ -1,7 +1,15 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  ImageBackground,
+  StyleSheet,
+  Pressable,
+  Alert,
+} from "react-native";
 import { faker } from "@faker-js/faker";
 import { Ionicons } from "@expo/vector-icons";
+import * as Clipboard from "expo-clipboard";
 
 interface CardProps {
   isFrozen: boolean;
@@ -10,15 +18,25 @@ interface CardProps {
 const Card: React.FC<CardProps> = ({ isFrozen }) => {
   const cardNumber = faker.finance.creditCardNumber("################");
   const formattedGroups = cardNumber.match(/.{1,4}/g) || [];
-
   const expiry = "25/09";
+
+  const handleCopy = () => {
+    const cardDetails = `
+Card Number: ${cardNumber}
+Expiry: ${expiry}
+CVV: ****
+    `;
+    Clipboard.setStringAsync(cardDetails.trim());
+    Alert.alert("Copied", "Card details copied to clipboard.");
+  };
 
   if (isFrozen) {
     return (
       <View style={styles.card}>
-        <Image
+        <ImageBackground
           source={require("../assets/cover.png")}
           style={styles.coverImage}
+          imageStyle={{ borderRadius: 16 }}
           resizeMode="cover"
         />
       </View>
@@ -26,16 +44,12 @@ const Card: React.FC<CardProps> = ({ isFrozen }) => {
   }
 
   return (
-    <View style={styles.card}>
-      {/* Logos */}
-      <View style={styles.logoRow}>
-        <Image source={require("../assets/yolo.png")} style={styles.yoloLogo} />
-        <Image
-          source={require("../assets/yesbank.png")}
-          style={styles.bankLogo}
-        />
-      </View>
-
+    <ImageBackground
+      source={require("../assets/bgimage.png")}
+      style={styles.card}
+      imageStyle={{ borderRadius: 16 }}
+      resizeMode="cover"
+    >
       {/* Card Number + Expiry */}
       <View style={styles.numberAndExpiryContainer}>
         <View style={styles.cardNumberGrid}>
@@ -56,24 +70,29 @@ const Card: React.FC<CardProps> = ({ isFrozen }) => {
       </View>
 
       {/* Copy Details */}
-      <View style={styles.copyRow}>
+      <Pressable style={styles.copyRow} onPress={handleCopy}>
         <Ionicons name="copy-outline" size={16} color="#f00" />
         <Text style={styles.copyText}>copy details</Text>
-      </View>
+      </Pressable>
 
       {/* RuPay Logo */}
-      <Image source={require("../assets/rupay.png")} style={styles.rupayLogo} />
-    </View>
+      <ImageBackground
+        source={require("../assets/rupay.png")}
+        style={styles.rupayLogo}
+        resizeMode="contain"
+      />
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#111",
+    backgroundColor: "#111", // this will be hidden behind the image
     borderRadius: 16,
     padding: 20,
+    paddingTop: 85,
     width: 250,
-    height:400,
+    height: 400,
     alignSelf: "center",
     position: "relative",
     overflow: "hidden",
@@ -83,24 +102,13 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
   },
   coverImage: {
-    width: "100%",
-    height: "100%",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: 250,
+    height: 400,
     borderRadius: 16,
-  },
-  logoRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 16,
-  },
-  yoloLogo: {
-    width: 90,
-    height: 90,
-    resizeMode: "contain",
-  },
-  bankLogo: {
-    width: 90,
-    height: 90,
-    resizeMode: "contain",
+    resizeMode: "cover",
   },
   numberAndExpiryContainer: {
     flexDirection: "row",
@@ -151,7 +159,6 @@ const styles = StyleSheet.create({
   rupayLogo: {
     width: 90,
     height: 80,
-    resizeMode: "contain",
     position: "absolute",
     bottom: 16,
     right: 20,
