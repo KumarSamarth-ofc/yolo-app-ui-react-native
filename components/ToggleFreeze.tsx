@@ -1,50 +1,77 @@
-import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+// components/ToggleFreeze.tsx
 
-export default function ToggleFreeze({
-  frozen,
-  setFrozen,
-}: {
-  frozen: boolean;
-  setFrozen: (val: boolean) => void;
-}) {
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.freezeButton}
-        onPress={() => setFrozen(!frozen)}
-      >
-        <Text style={styles.icon}>❄️</Text>
-      </TouchableOpacity>
-      <Text style={styles.label}>{frozen ? "Unfreeze" : "freeze"}</Text>
-    </View>
-  );
+import React from "react";
+import { Pressable, Text, StyleSheet, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+
+interface ToggleFreezeProps {
+  isFrozen: boolean;
+  onToggle: () => void;
 }
 
+const ToggleFreeze: React.FC<ToggleFreezeProps> = ({ isFrozen, onToggle }) => {
+  return (
+    <Pressable onPress={onToggle} style={styles.buttonContainer}>
+      <View
+        style={[styles.iconCircle, isFrozen ? styles.frozen : styles.unfrozen]}
+      >
+        <Ionicons
+          name="snow-outline"
+          size={22}
+          color={isFrozen ? "#f00" : "#fff"}
+        />
+      </View>
+      <Text
+        style={[
+          styles.label,
+          isFrozen ? styles.labelFrozen : styles.labelUnfrozen,
+        ]}
+      >
+        {isFrozen ? "unfreeze" : "freeze"}
+      </Text>
+    </Pressable>
+  );
+};
+
 const styles = StyleSheet.create({
-  container: {
-    marginLeft: 20,
+  buttonContainer: {
     alignItems: "center",
+    marginTop: 20,
   },
-  freezeButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: "#111",
-    borderWidth: 1,
-    borderColor: "#fff",
-    shadowColor: "#fff",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.8,
-    shadowRadius: 10,
+  iconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 1.5,
     justifyContent: "center",
     alignItems: "center",
   },
-  icon: {
-    fontSize: 24,
+  frozen: {
+    borderColor: "#f00",
+    shadowColor: "#f00",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 10,
+  },
+  unfrozen: {
+    borderColor: "#fff",
+    shadowColor: "#fff",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
   },
   label: {
+    fontSize: 14,
+    fontWeight: "500",
+    marginTop: 6,
+    textTransform: "lowercase",
+  },
+  labelFrozen: {
+    color: "#f00",
+  },
+  labelUnfrozen: {
     color: "#fff",
-    fontSize: 12,
-    marginTop: 8,
   },
 });
+
+export default ToggleFreeze;

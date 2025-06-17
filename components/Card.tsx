@@ -1,171 +1,161 @@
-import { View, Text, Image, StyleSheet, Animated, Easing } from "react-native";
-import { useEffect, useRef } from "react";
+import React from "react";
+import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 import { faker } from "@faker-js/faker";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import { Ionicons } from "@expo/vector-icons";
 
-export default function Card({ frozen }: { frozen: boolean }) {
-  const cardNumber = faker.finance
-    .creditCardNumber()
-    .replace(/-/g, " ")
-    .slice(0, 19);
-  const expiry = faker.date
-    .future()
-    .toISOString()
-    .slice(2, 7)
-    .replace("-", "/");
+interface CardProps {
+  isFrozen: boolean;
+}
 
-  const animatedValue = useRef(new Animated.Value(0)).current;
+const Card: React.FC<CardProps> = ({ isFrozen }) => {
+  const cardNumber = faker.finance.creditCardNumber("################");
+  const formattedGroups = cardNumber.match(/.{1,4}/g) || [];
 
-  useEffect(() => {
-    Animated.loop(
-      Animated.timing(animatedValue, {
-        toValue: 1,
-        duration: 3000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
-    ).start();
-  }, []);
+  const expiry = "25/09";
 
-  const shineTranslateX = animatedValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: [-300, 300],
-  });
-
-  if (frozen) {
+  if (isFrozen) {
     return (
-      <View style={styles.cardContainer}>
+      <View style={styles.card}>
         <Image
           source={require("../assets/cover.png")}
           style={styles.coverImage}
+          resizeMode="cover"
         />
       </View>
     );
   }
 
   return (
-    <View style={styles.cardContainer}>
+    <View style={styles.card}>
+      {/* Logos */}
       <View style={styles.logoRow}>
-        <Image source={require("../assets/yolo.png")} style={styles.logoYolo} />
+        <Image source={require("../assets/yolo.png")} style={styles.yoloLogo} />
         <Image
           source={require("../assets/yesbank.png")}
-          style={styles.logoYes}
+          style={styles.bankLogo}
         />
       </View>
 
-      <Text style={styles.cardNumber}>{cardNumber}</Text>
-      <Text style={styles.expiry}>Expiry {expiry}</Text>
-      <Text style={styles.cvv}>CVV ***</Text>
+      {/* Card Number + Expiry */}
+      <View style={styles.numberAndExpiryContainer}>
+        <View style={styles.cardNumberGrid}>
+          {formattedGroups.map((group, idx) => (
+            <Text key={idx} style={styles.numberBlock}>
+              {group}
+            </Text>
+          ))}
+        </View>
+
+        <View style={styles.expiryBlock}>
+          <Text style={styles.expiryLabel}>EXPIRY</Text>
+          <Text style={styles.expiryValue}>{expiry}</Text>
+
+          <Text style={[styles.expiryLabel, { marginTop: 12 }]}>CVV</Text>
+          <Text style={styles.cvvStars}>****</Text>
+        </View>
+      </View>
+
+      {/* Copy Details */}
       <View style={styles.copyRow}>
-        <Ionicons
-          name="copy-outline"
-          size={20}
-          color="red"
-          style={{ marginRight: 6 }}
-        />
+        <Ionicons name="copy-outline" size={16} color="#f00" />
         <Text style={styles.copyText}>copy details</Text>
       </View>
 
+      {/* RuPay Logo */}
       <Image source={require("../assets/rupay.png")} style={styles.rupayLogo} />
-
-      <Animated.View
-        style={[
-          styles.shine,
-          {
-            transform: [{ translateX: shineTranslateX }, { rotate: "45deg" }],
-          },
-        ]}
-      />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  cardContainer: {
-    width: 300,
-    height: 400,
-    borderRadius: 24,
+  card: {
     backgroundColor: "#111",
+    borderRadius: 16,
     padding: 20,
-    overflow: "hidden",
+    width: 250,
+    height:400,
+    alignSelf: "center",
     position: "relative",
-    justifyContent: "center",
-    shadowColor: "#ff0000", 
-    shadowOffset: {
-      width: -4,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 12, 
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.08)", 
-  },
-  logoRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 10,
-  },
-  logoYolo: {
-    width: 100,
-    height: 100,
-    resizeMode: "contain",
-  },
-  logoYes: {
-    width: 100,
-    height: 100,
-    resizeMode: "contain",
-  },
-  cardNumber: {
-    color: "#fff",
-    fontSize: 18,
-    letterSpacing: 2,
-    marginBottom: 5,
-  },
-  expiry: {
-    color: "#aaa",
-    fontSize: 14,
-  },
-  cvv: {
-    color: "#aaa",
-    fontSize: 14,
-    marginBottom: 10,
-  },
-  copyText: {
-    color: "red",
-    fontSize: 12,
-    marginTop: 5,
-  },
-  rupayLogo: {
-    width: 80,
-    height: 80,
-    resizeMode: "contain",
-    position: "absolute",
-    bottom: 15,
-    right: 20,
-  },
-  shine: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: 80,
-    height: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    opacity: 0.6,
+    overflow: "hidden",
+    shadowColor: "#f00",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
   },
   coverImage: {
     width: "100%",
     height: "100%",
-    borderRadius: 20,
-    resizeMode: "cover",
+    borderRadius: 16,
+  },
+  logoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  yoloLogo: {
+    width: 90,
+    height: 90,
+    resizeMode: "contain",
+  },
+  bankLogo: {
+    width: 90,
+    height: 90,
+    resizeMode: "contain",
+  },
+  numberAndExpiryContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginTop: 10,
+  },
+  cardNumberGrid: {
+    flexDirection: "column",
+  },
+  numberBlock: {
+    color: "#fff",
+    fontSize: 22,
+    fontStyle: "italic",
+    fontWeight: "600",
+    fontFamily: "monospace",
+    marginVertical: 2,
+  },
+  expiryBlock: {
+    alignItems: "flex-end",
+  },
+  expiryLabel: {
+    fontSize: 12,
+    color: "#aaa",
+    textTransform: "uppercase",
+  },
+  expiryValue: {
+    fontSize: 16,
+    color: "#fff",
+    fontWeight: "600",
+  },
+  cvvStars: {
+    fontSize: 16,
+    color: "#fff",
+    fontWeight: "600",
   },
   copyRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 10,
+    marginTop: 24,
   },
   copyText: {
-    color: "red",
-    fontSize: 12,
+    color: "#f00",
+    marginLeft: 6,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  rupayLogo: {
+    width: 90,
+    height: 80,
+    resizeMode: "contain",
+    position: "absolute",
+    bottom: 16,
+    right: 20,
   },
 });
+
+export default Card;

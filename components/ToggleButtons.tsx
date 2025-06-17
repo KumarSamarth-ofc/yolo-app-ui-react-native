@@ -1,63 +1,86 @@
+import React from "react";
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 
-export default function ToggleButtons({
-  selected,
-  setSelected,
-}: {
-  selected: string;
-  setSelected: (val: string) => void;
-}) {
+interface ToggleButtonsProps {
+  activeMode: "pay" | "card";
+  onToggle: (mode: "pay" | "card") => void;
+}
+
+const ToggleButtons: React.FC<ToggleButtonsProps> = ({
+  activeMode,
+  onToggle,
+}) => {
   return (
-    <View style={styles.toggleContainer}>
+    <View style={styles.container}>
       <TouchableOpacity
-        style={[styles.button, selected === "pay" && styles.active]}
-        onPress={() => setSelected("pay")}
+        style={[
+          styles.button,
+          activeMode === "pay" ? styles.activeButton : styles.inactiveButton,
+        ]}
+        onPress={() => onToggle("pay")}
       >
-        <Text style={[styles.text, selected === "pay" && styles.activeText]}>
+        <Text
+          style={[
+            styles.text,
+            activeMode === "pay" ? styles.activeText : styles.inactiveText,
+          ]}
+        >
           pay
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={[styles.button, selected === "card" && styles.activeRed]}
-        onPress={() => setSelected("card")}
+        style={[
+          styles.button,
+          activeMode === "card" ? styles.activeButton : styles.inactiveButton,
+        ]}
+        onPress={() => onToggle("card")}
       >
         <Text
-          style={[styles.text, selected === "card" && styles.activeRedText]}
+          style={[
+            styles.text,
+            activeMode === "card" ? styles.activeText : styles.inactiveText,
+          ]}
         >
           card
         </Text>
       </TouchableOpacity>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  toggleContainer: {
+  container: {
     flexDirection: "row",
-    marginBottom: 20,
+    backgroundColor: "#000",
+    borderRadius: 30,
+    padding: 4,
+    justifyContent: "center",
   },
   button: {
     paddingVertical: 10,
-    paddingHorizontal: 30,
+    paddingHorizontal: 28,
     borderRadius: 30,
-    borderWidth: 1,
+    borderWidth: 1.5,
+    marginHorizontal: 6,
+    backgroundColor: "#000",
+  },
+  activeButton: {
+    borderColor: "#f00",
+  },
+  inactiveButton: {
     borderColor: "#fff",
-    marginHorizontal: 5,
   },
   text: {
-    color: "#fff",
-    fontWeight: "600",
-  },
-  active: {
-    backgroundColor: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+    textTransform: "lowercase",
   },
   activeText: {
-    color: "#000",
+    color: "#f00",
   },
-  activeRed: {
-    borderColor: "red",
-  },
-  activeRedText: {
-    color: "red",
+  inactiveText: {
+    color: "#fff",
   },
 });
+
+export default ToggleButtons;
